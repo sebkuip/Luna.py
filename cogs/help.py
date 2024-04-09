@@ -10,11 +10,14 @@ class Paginator(discord.ui.View):
 
         self.current = 0
 
-    def stop(self):
+    async def stop(self):
+        for child in self.children:
+            child.disabled = True
         super().stop()
+        await self.message.edit(embed=self.pages[self.current], view=self)
 
     async def on_timeout(self):
-        self.stop()
+        await self.stop()
 
     async def on_back(self):
         self.current -= 1
@@ -44,7 +47,7 @@ class Paginator(discord.ui.View):
         await self.stop()
         await interaction.response.edit_message(embed=self.pages[self.current])
 
-class Help(commands.HelpCommand):
+class myHelpCommand(commands.HelpCommand):
     async def generate_mapping_help(self, mapping: dict[commands.Cog, list[commands.Command]]):
         embeds: list[discord.Embed] = []
         for cog in reversed(mapping.keys()):
@@ -62,7 +65,10 @@ class Help(commands.HelpCommand):
                     else:
                         embed: discord.Embed = discord.Embed(title="No Category", color=0x00ff00)
 
-                embed.add_field(name=command.name + " " + command.signature, value=command.help + "\n\nAliases: " + ", ".join(command.aliases), inline=False)
+                if command.aliases != []:
+                    embed.add_field(name=command.name + " " + command.signature, value=command.help + "\n\n**Aliases**: " + ", ".join(command.aliases), inline=False)
+                else:
+                    embed.add_field(name=command.name + " " + command.signature, value=command.help, inline=False)
             embeds.append(embed)
         return embeds
 
@@ -81,8 +87,10 @@ class Help(commands.HelpCommand):
     async def send_cog_help(self, cog):
         await self.context.send("This is help cog")
 
-    
-
+class Help(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+        self.bot.help_command = myHelpCommand()
 
 async def setup(bot: commands.Bot):
-    bot.help_command = Help()
+    await bot.add_cog(Help(bot))
