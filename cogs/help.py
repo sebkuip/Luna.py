@@ -45,14 +45,16 @@ class Paginator(discord.ui.View):
         await interaction.response.edit_message(embed=self.pages[self.current])
 
 class Help(commands.HelpCommand):
-    def generate_mapping_help(self, mapping: dict[commands.Cog, list[commands.Command]]):
+    async def generate_mapping_help(self, mapping: dict[commands.Cog, list[commands.Command]]):
         embeds: list[discord.Embed] = []
         for cog in reversed(mapping.keys()):
             if cog is not None:
                 embed: discord.Embed = discord.Embed(title=cog.qualified_name, color=0x00ff00)
             else:
                 embed: discord.Embed = discord.Embed(title="No Category", color=0x00ff00)
-            for command in mapping[cog]:
+
+            filtered_commands = await self.filter_commands(mapping[cog])
+            for command in filtered_commands:
                 if len(embed.fields) == 25:
                     embeds.append(embed)
                     if cog is not None:
@@ -66,7 +68,7 @@ class Help(commands.HelpCommand):
 
     async def send_bot_help(self, mapping):
         message = await self.get_destination().send("Loading help...")
-        embeds = self.generate_mapping_help(mapping)
+        embeds = await self.generate_mapping_help(mapping)
         paginator = Paginator(embeds, message, self.context.author)
         await message.edit(content=None, embed=embeds[0], view=paginator)
 
