@@ -1,15 +1,16 @@
+import os
+import sqlite3
+
 import discord
 from discord.ext import commands
-
-import sqlite3
-import os
 from dotenv import load_dotenv
 
 load_dotenv(".env")
 
 token = os.getenv("TOKEN")
 
-bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
+bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
+
 
 @bot.event
 async def on_ready():
@@ -21,9 +22,9 @@ async def on_ready():
     # extensions
     await load_extensions()
 
+
 async def load_extensions():
     if __name__ == "__main__":
-
         status = {}
         for extension in os.listdir("./cogs"):
             if extension.endswith(".py"):
@@ -42,6 +43,7 @@ async def load_extensions():
         for extension in status:
             print(f" {extension.ljust(maxlen)} | {status[extension]}")
         print(errors) if errors else print("no errors during loading")
+
 
 @bot.command(help="Load a cog")
 @commands.is_owner()
@@ -64,8 +66,12 @@ async def load(ctx, name):
     maxlen = max(len(str(extension)) for extension in status)
     extensionstatus = ""
     for extension in status:
-        extensionstatus += (f" {extension.ljust(maxlen)} | {status[extension]}\n")
-    embed = discord.Embed(title=f"load report of {name}", description=extensionstatus, color=0x00ff00 if not errors else 0xFF0000)
+        extensionstatus += f" {extension.ljust(maxlen)} | {status[extension]}\n"
+    embed = discord.Embed(
+        title=f"load report of {name}",
+        description=extensionstatus,
+        color=0x00FF00 if not errors else 0xFF0000,
+    )
     if errors:
         embed.add_field(name="Errors", value=str(errors))
     await ctx.send(embed=embed)
@@ -92,8 +98,12 @@ async def unload(ctx, name):
     maxlen = max(len(str(extension)) for extension in status)
     extensionstatus = ""
     for extension in status:
-        extensionstatus += (f" {extension.ljust(maxlen)} | {status[extension]}\n")
-    embed = discord.Embed(title=f"Unload report of {name}", description=extensionstatus, color=0x00ff00 if not errors else 0xFF0000)
+        extensionstatus += f" {extension.ljust(maxlen)} | {status[extension]}\n"
+    embed = discord.Embed(
+        title=f"Unload report of {name}",
+        description=extensionstatus,
+        color=0x00FF00 if not errors else 0xFF0000,
+    )
     if errors:
         embed.add_field(name="Errors", value=str(errors))
     await ctx.send(embed=embed)
@@ -120,16 +130,24 @@ async def reload(ctx, name):
     maxlen = max(len(str(extension)) for extension in status)
     extensionstatus = ""
     for extension in status:
-        extensionstatus += (f" {extension.ljust(maxlen)} | {status[extension]}\n")
-    embed = discord.Embed(title=f"Reload report of {name}", description=extensionstatus, color=0x00ff00 if not errors else 0xFF0000)
+        extensionstatus += f" {extension.ljust(maxlen)} | {status[extension]}\n"
+    embed = discord.Embed(
+        title=f"Reload report of {name}",
+        description=extensionstatus,
+        color=0x00FF00 if not errors else 0xFF0000,
+    )
     if errors:
         embed.add_field(name="Errors", value=str(errors))
     await ctx.send(embed=embed)
 
+
 @bot.command(help="Show all loaded cogs")
 @commands.is_owner()
 async def loaded(ctx):
-    embed = discord.Embed(title="Loaded cogs", description="\n".join(bot.cogs), color=0x00ff00)
+    embed = discord.Embed(
+        title="Loaded cogs", description="\n".join(bot.cogs), color=0x00FF00
+    )
     await ctx.reply(embed=embed, mention_author=False)
+
 
 bot.run(token)
