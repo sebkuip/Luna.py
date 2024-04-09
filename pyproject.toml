@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "luna-py"
+version = "0.1.0"
+description = "A remake of https://github.com/Arburich/Luna in python"
+authors = ["sebkuip"]
+readme = "README.md"
+packages = [{include = "luna"}]
+package-mode = false
+
+
+[tool.poetry.dependencies]
+python = "^3.10"
+"discord.py" = "^2.3.2"
+python-dotenv = "^1.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
